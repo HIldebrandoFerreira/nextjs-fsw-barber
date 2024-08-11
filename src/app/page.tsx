@@ -2,7 +2,6 @@ import BarberShopItem from "@/components/BarberShopItem";
 import BookingItem from "@/components/BookItem";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { db } from "@/lib/prisma";
 import { SearchIcon } from "lucide-react";
@@ -24,6 +23,11 @@ const quickSearchOptions: QuickSearchOptions[] = [
 
 export default async function Home() {
   const barbershops = await db.barbershop.findMany();
+  const popularBarbershops = await db.barbershop.findMany({
+    orderBy: {
+      name: "desc",
+    },
+  });
   return (
     <div>
       <Header />
@@ -74,20 +78,11 @@ export default async function Home() {
           Populares
         </h2>
         <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
-          {barbershops.map((barbershop) => (
+          {popularBarbershops.map((barbershop) => (
             <BarberShopItem key={barbershop.id} barbershop={barbershop} />
           ))}
         </div>
       </div>
-      <footer>
-        <Card>
-          <CardContent className="px-5 py-6">
-            <p className="text-sm text-gray-400">
-              © 2023 Copyright <span className="font-bold">FSW Barber</span>
-            </p>
-          </CardContent>
-        </Card>
-      </footer>
     </div>
   );
 }
